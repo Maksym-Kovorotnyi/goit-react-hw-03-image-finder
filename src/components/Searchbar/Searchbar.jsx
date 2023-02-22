@@ -1,22 +1,22 @@
-import '../../styles.css'
+import css from './Searchbar.module.css'
 
 export const SearchBar=({onSubmit, onChange})=>{
     
  
         return <>
-            <header className="Searchbar" >
+            <header className={css.searchbar} >
                 <form
-                    className='SearchForm' 
+                    className={css.searchForm} 
                     
                     onSubmit={onSubmit}>
                     <button
-                        className='SearchForm-button'
+                        className={css.button}
                         
                         type="submit" >
                         <span className='SearchForm-button-label' >Search</span>
                     </button>
                     <input
-                        className='SearchForm-input'
+                        className={css.input}
                     type="text"
                     autoComplete="off"
                     autoFocus
