@@ -1,6 +1,7 @@
-export const Item = ({images}) => {
+import '../../styles.css'
+export const Item = ({ images, onClick }) => {
     return <>
-        {images.map(({id, pageURL, previewURL}) => <li key={id}><img  src={previewURL} alt="" /></li>)
+        {images.map(({id, webformatURL}) => <li onClick={onClick} className='ImageGalleryItem' key={id} id={id}><img  className='ImageGalleryItem-image'  src={webformatURL} alt="" /></li>)
 }
 </>
 }
