@@ -15,54 +15,60 @@ export class App extends Component {
     modalImg: {},
     search: '',
     isLoad: false,
+    clickOnLoadMore: false,
     ModalOpen: false,
+    submited: false,
     PerPage: 12,
     Page: 1
   }
-  async componentDidMount() {
-
-      window.addEventListener('keydown', this.handleKeyDown)
-      
-    try {
-      this.setState({ isLoad: true });
-      const promise = await axios.get(`?key=${MY_KEY}&per_page=${this.state.PerPage}`);
-      const data = promise.data;
-      this.setState({ images: data.hits });
-      this.setState({ isLoad: false });
-    } catch (error) {
-        alert('Something wrong')
-    }
-  }
   
-  async searchQuery(query) {
+  
+  async componentDidUpdate(__, prevState) {
+    if(this.state.submited && prevState.submited !== this.state.submited)
     try {
       this.setState({ isLoad: true });
-      const promise = await axios.get(`?key=${MY_KEY}&per_page=12&q=${query}`);
+      const promise = await axios.get(`?key=${MY_KEY}&per_page=12&page=${this.state.Page}&q=${this.state.search}`);
       const data = promise.data;
       this.setState({ images: data.hits })
       this.setState({ isLoad: false });
+      this.setState({ submited: false })
+      return
     } catch (error) {
-      alert('Something wrong')
+      return alert('Something wrong')
+      }
+    else if (this.state.Page > 1 && !this.state.submited && !this.state.isLoad && prevState.Page !== this.state.Page) {
+    try {
+      this.setState({ isLoad: true });
+      const promise = await axios.get(`?key=${MY_KEY}&per_page=12&page=${this.state.Page}&q=${this.state.search}`);
+      const data = promise.data;
+      this.setState((prevState) => ({ images: [...prevState.images, ...data.hits] }));
+      this.setState({ isLoad: false });
+    } catch (error) {
+      alert('Something wrong');
     }
   }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown)
+  }
   handleReadInput = (e) => {
-    this.setState({ search: e.target.value })
+     this.setState({ search: e.target.value })
     
   }
   handleSubmit = (e) => {
     e.preventDefault()
-    const query = this.state.search;
-    this.searchQuery(query)
-    this.setState({Page: 1})
+    this.setState({ submited: true })
+    this.setState({clickOnLoadMore: true})
   }
 
   handleClickImg = (e) => {
-    console.dir(e.currentTarget);
     if (e.currentTarget.nodeName === 'LI' || e.target.nodeName === 'DIV') {
       this.setState(state => ({ ModalOpen: !state.ModalOpen }));
        const imageId = e.currentTarget.id;
   const image = this.state.images.find((image) => image.id === Number(imageId));
       this.setState({ modalImg: { ...image } }); 
+      window.addEventListener('keydown', this.handleKeyDown)
       
     }
   };
@@ -72,20 +78,15 @@ export class App extends Component {
   }
 };
   handleLoadMore = async () => {
-    const { images, PerPage, Page } = this.state;
-    const moreOnPage = PerPage + 12;
-    const newPage = Page + 1;
-  try {
-    const promise = await axios.get(`?key=${MY_KEY}&per_page=${moreOnPage}&page=${newPage}`);
-    const data = promise.data;
-    this.setState({ images: [...images, ...data.hits], PerPage: moreOnPage, Page: newPage });
-  } catch (error) {
-    alert('Something wrong')
-  }
+    this.setState(prev => ({ Page: prev.Page + 1 }))
+    
+  
   }
   render() {
     const {isLoad} = this.state
-    const {largeImageURL} = this.state.modalImg
+    const { largeImageURL } = this.state.modalImg
+    console.log(this.state.search)
+    console.log(this.state.submited);
     return <>
       < SearchBar
         onSubmit={this.handleSubmit}
@@ -97,9 +98,9 @@ export class App extends Component {
         Loader={isLoad}
         />
       
-      <LoadMoreBtn
+      {this.state.clickOnLoadMore?<LoadMoreBtn
       onClick={this.handleLoadMore}
-      />
+      />: ''}
       
       {this.state.ModalOpen ? <Modal
         Image={largeImageURL}
