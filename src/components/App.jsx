@@ -58,6 +58,7 @@ export class App extends Component {
   }
   handleSubmit = (e) => {
     e.preventDefault()
+    this.setState({Page: 1})
     this.setState({ submited: true })
     this.setState({clickOnLoadMore: true})
   }
