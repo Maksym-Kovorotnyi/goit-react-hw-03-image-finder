@@ -1,4 +1,4 @@
-
+import PropTypes from 'prop-types'
 import css from './Modal.module.css'
 export const Modal =({Image, onClick,}) => {
         return <>
@@ -12,4 +12,15 @@ export const Modal =({Image, onClick,}) => {
           </div>
 </>
 
+}
+
+Modal.propTypes = {
+   images: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      webformatURL: PropTypes.string.isRequired,
+      tags: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  onClick: PropTypes.func.isRequired,
 }

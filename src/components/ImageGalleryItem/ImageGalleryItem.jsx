@@ -1,5 +1,6 @@
 import css from './ImageGalleryItem.module.css';
 import { FallingLines } from 'react-loader-spinner';
+import PropTypes from 'prop-types'
 
 export const Item = ({ images, onClick, Loader }) => {
     return <>
@@ -12,3 +13,15 @@ export const Item = ({ images, onClick, Loader }) => {
 }
 </>
 }
+
+Item.propTypes = {
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      webformatURL: PropTypes.string.isRequired,
+      tags: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  onClick: PropTypes.func.isRequired,
+  Loader: PropTypes.bool.isRequired,
+};
